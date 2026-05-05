@@ -1,0 +1,34 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio cache
+.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+
+# NuGet packages
+*.nupkg
+packages/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Rider / JetBrains
+.idea/
+
+# Dotnet tools
+*.snupkg
+
+# Publish output
+publish/

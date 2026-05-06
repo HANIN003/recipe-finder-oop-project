@@ -92,10 +92,41 @@ namespace RecipeFinder
             }        
         }
 
-        private static void SearchByIngredients()
+        private static async Task SearchByIngredients()
         {
-            Console.WriteLine("Search by Ingredients selected");
-            //Code to come
+            Console.WriteLine("Enter ingredients (comma-separated list): ");
+            var input = Console.ReadLine();
+
+            var ingredients = input?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(i => i.Trim())
+                .ToList() ?? new List<string>();
+
+            var prefs = new UserPreferences
+            {
+                Ingredients = ingredients,
+            };
+
+            try
+            {
+                var recipe = await _recipeService.SearchByIngredientsAsync(ingredients, prefs);
+
+                Console.WriteLine($"\n Recipe Found: {recipe.Title}");
+                Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
+                Console.WriteLine($"Source: {recipe.SourceUrl}");
+                Console.WriteLine($"Summary: {recipe.Summary}");
+
+                Console.WriteLine("\n Save to favorites (y/n): ");
+                if (Console.ReadLine()?.ToLower() == "y")
+                {
+                    _favoritsRepo.Save(recipe);
+                    Console.WriteLine("Saved!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
 
         private static void ViewFavorites()

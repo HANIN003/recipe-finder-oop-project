@@ -48,8 +48,46 @@ namespace RecipeFinder.Services
 
         public override async Task<Recipe> SearchByIngredientsAsync(List<string> ingredients, UserPreferences prefs);
         {
-            //Implementation to come
-            return new Recipe(); 
+            var ingredientQuery = string.Join(",", ingredients);
+
+            var url = $"https://api.spoonacular.com/recipes/findByIngredients?apiKey={_apiKey}&ingredients={ingredientQuery}&number=1";
+
+             var response = await _client.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("API request failed.");
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var results = JsonSerializer.Deserialize<List<JsonElement>>(json);
+
+            if (results == null || results.Count == 0)
+                throw new Exception("No recipes found.");
+
+            var recipeJson = results[0];
+
+            var id = recipeJson.GetProperty("id").GetInt32();
+
+            var detailUrl = $"https://api.spoonacular.com/recipes/{id}/information?apiKey={_apiKey}&includeNutrition=false";
+
+            var detailResponse = await _client.GetAsync(detailUrl);
+
+            if (!detailResponse.IsSuccessStatusCode)
+                throw new Exception("Failed to retrieve recipe details.");
+
+            var detailJson = await detailResponse.Content.ReadAsStringAsync();
+            var detailDoc = JsonDocument.Parse(detailJson).RootElement;
+
+            return new Recipe
+            {
+            Title = detailDoc.GetProperty("title").GetString() ?? "",
+                ImageUrl = detailDoc.GetProperty("image").GetString() ?? "",
+                SourceUrl = detailDoc.GetProperty("sourceUrl").GetString() ?? "",
+                TimeRequired = detailDoc.GetProperty("readyInMinutes").GetInt32(),
+                Summary = detailDoc.GetProperty("summary").GetString() ?? "",
+                Cuisines = detailDoc.GetProperty("cuisines").EnumerateArray().Select(c => c.GetString() ?? "").ToList(),
+                Diets = detailDoc.GetProperty("diets").EnumerateArray().Select(d => d.GetString() ?? "").ToList()
+            };
         }
     }
 }

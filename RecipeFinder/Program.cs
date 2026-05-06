@@ -14,10 +14,10 @@ namespace RecipeFinder
             _recipeService = new SpoonacularRecipeService("6a7ecfd7849342fd967db287d2b14b6c");
             _favoritesRepo = new FileFavoritesRepository();
 
-            ShowMenu();
+            ShowMenu().Wait();
         }
 
-        private static void ShowMenu()
+        private static async Task ShowMenu()
         {
             bool running = true;
 
@@ -36,10 +36,10 @@ namespace RecipeFinder
                 switch (choice)
                 {
                     case "1":
-                        SearchByCuisine();
+                        await SearchByCuisine();
                         break;
                     case "2":
-                        SearchByIngredients();
+                        await SearchByIngredients();
                         break;
                     case "3":
                         ViewFavorites();
@@ -50,13 +50,13 @@ namespace RecipeFinder
                     case "5":
                         running = false;
                         break;
-                    default: Console.WriteLine("Invalid choice. Try again>");
+                    default: Console.WriteLine("Invalid choice. Try again");
                         break;
                 }
             }
         }
 
-        private static async void SearchByCuisine()
+        private static async Task SearchByCuisine()
         {
             Console.WriteLine("Enter a cuisine (American, Italian, Mexican): ");
             var cuisine = Console.ReadLine();

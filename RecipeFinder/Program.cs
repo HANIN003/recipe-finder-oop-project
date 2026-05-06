@@ -1,6 +1,7 @@
 ﻿using RecipeFinder.Models;
 using RecipeFinder.Services;
 using RecipeFinder.Repositories;
+using System.Text.RegularExpressions;
 
 namespace RecipeFinder
 {
@@ -77,10 +78,15 @@ namespace RecipeFinder
             {
                 var recipe = await _recipeService.SearchByCuisineAsync(prefs);
 
-                Console.WriteLine($"\nRecipe Found: {recipe.Title}");
+                Console.WriteLine("\n-----------------------------------------");
+                Console.WriteLine($"Recipe Found: {recipe.Title}");
+                Console.WriteLine("-----------------------------------------");
                 Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
                 Console.WriteLine($"Source: {recipe.SourceUrl}");
-                Console.WriteLine($"Summary: {recipe.Summary}");
+                var cleanSummary = Regex.Replace(recipe.Summary ?? "", "<.*?>", "");
+                Console.WriteLine("\nSummary:\n");
+                Console.WriteLine(cleanSummary);
+                Console.WriteLine("\n-----------------------------------------");
 
                 Console.WriteLine("\n Save to favorites? (y/n): ");
                 if (Console.ReadLine()?.ToLower() == "y")
@@ -114,10 +120,15 @@ namespace RecipeFinder
             {
                 var recipe = await _recipeService.SearchByIngredientsAsync(ingredients, prefs);
 
+                Console.WriteLine("\n-----------------------------------------");
                 Console.WriteLine($"\nRecipe Found: {recipe.Title}");
+                Console.WriteLine("-----------------------------------------");
                 Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
                 Console.WriteLine($"Source: {recipe.SourceUrl}");
-                Console.WriteLine($"Summary: {recipe.Summary}");
+                var cleanSummary = Regex.Replace(recipe.Summary ?? "", "<.*?>", "");
+                Console.WriteLine("\nSummary:\n");
+                Console.WriteLine(cleanSummary);
+                Console.WriteLine("\n-----------------------------------------");
 
                 Console.WriteLine("\n Save to favorites (y/n): ");
                 if (Console.ReadLine()?.ToLower() == "y")

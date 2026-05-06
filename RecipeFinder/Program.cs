@@ -77,7 +77,7 @@ namespace RecipeFinder
             {
                 var recipe = await _recipeService.SearchByCuisineAsync(prefs);
 
-                Console.WriteLine($"\n Recipe Found: {recipe.Title}");
+                Console.WriteLine($"\nRecipe Found: {recipe.Title}");
                 Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
                 Console.WriteLine($"Source: {recipe.SourceUrl}");
                 Console.WriteLine($"Summary: {recipe.Summary}");
@@ -114,7 +114,7 @@ namespace RecipeFinder
             {
                 var recipe = await _recipeService.SearchByIngredientsAsync(ingredients, prefs);
 
-                Console.WriteLine($"\n Recipe Found: {recipe.Title}");
+                Console.WriteLine($"\nRecipe Found: {recipe.Title}");
                 Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
                 Console.WriteLine($"Source: {recipe.SourceUrl}");
                 Console.WriteLine($"Summary: {recipe.Summary}");

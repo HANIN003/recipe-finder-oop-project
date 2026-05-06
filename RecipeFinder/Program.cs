@@ -131,14 +131,40 @@ namespace RecipeFinder
 
         private static void ViewFavorites()
         {
-            Console.WriteLine("View Favorites selected");
-            //Code to come
+            Console.WriteLine("\n---- Favorite Recipes ----");
+
+            var favorites = _favoritsRepo.Load();
+
+            if (favorites.Count == 0)
+            {
+                Console.WriteLine("No favorites saved yet.");
+                return;
+            }
+
+            int index = 1;
+            foreach (var recipe in favorites)
+            {
+                Console.WriteLine($"\n {index}. {recipe.Title}");
+                Console.WriteLine($" Time to Make: {recipe.TimeToMake} minutes");
+                Console.WriteLine($" Source: {recipe.SourceUrl}");
+                index++;
+            }
         }
 
         private static void ClearFavorites()
         {
-            Console.WriteLine("Clear favorites selected");
-            //Code to come
+            Console.WriteLine("Are you sure you want to clear all favorites (y/n): ");
+            var confirm = Console.ReadLine()?.ToLower();
+
+            if (confirm == "y")
+            {
+                _favoritsRepo.Clear();
+                Console.WriteLine("Favorites cleared.");
+            }
+            else
+            {
+                Console.WriteLine("Canceled.");
+            }
         }
     }
 }

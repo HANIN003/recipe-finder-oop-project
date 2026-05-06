@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json;
 using RecipeFinder.Models;
 
@@ -5,7 +6,7 @@ namespace RecipeFinder.Repositories
 {
     public class FileFavoritesRepository : IFavoritesRepository
     {
-        private readonly string _filePath = "favorite.json";
+        private readonly string _filePath = "favorites.json";
 
         public void Save(Recipe recipe)
         {
@@ -27,11 +28,15 @@ namespace RecipeFinder.Repositories
 
             var json = File.ReadAllText(_filePath);
 
-            return JsonSerializer.Deserialize<List<Recipe>>(json);
-                ?? new List<Recipe>();
+            var list = JsonSerializer.Deserialize<List<Recipe>>(json);
+
+            if (list == null)
+                return new List<Recipe>();
+
+            return list;
         }
 
-        public void Clear();
+        public void Clear()
         {
             if (File.Exists(_filePath))
                 File.Delete(_filePath);

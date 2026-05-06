@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using RecipeFinder.Models;
 
 namespace RecipeFinder.Services
@@ -17,7 +21,8 @@ namespace RecipeFinder.Services
 
         public override async Task<Recipe> SearchByCuisineAsync(UserPreferences prefs)
         {
-            var url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={_apiKey}&cuisine={prefs.Cuisine}&intolerances={string.Join(",", prefs.Intolerances)}&addRecipeInformation=true&number=1";
+            var url =
+                $"https://api.spoonacular.com/recipes/complexSearch?apiKey={_apiKey}&cuisine={prefs.Cuisine}&intolerances={string.Join(",", prefs.Intolerances)}&addRecipeInformation=true&number=1";
 
             var response = await _client.GetAsync(url);
 
@@ -34,7 +39,7 @@ namespace RecipeFinder.Services
 
             var recipeJson = results[0];
 
-            return new Recipe();
+            return new Recipe
             {
                 Title = recipeJson.GetProperty("title").GetString() ?? "",
                 ImageUrl = recipeJson.GetProperty("image").GetString() ?? "",
@@ -46,13 +51,14 @@ namespace RecipeFinder.Services
             };
         }
 
-        public override async Task<Recipe> SearchByIngredientsAsync(List<string> ingredients, UserPreferences prefs);
+        public override async Task<Recipe> SearchByIngredientsAsync(List<string> ingredients, UserPreferences prefs)
         {
             var ingredientQuery = string.Join(",", ingredients);
 
-            var url = $"https://api.spoonacular.com/recipes/findByIngredients?apiKey={_apiKey}&ingredients={ingredientQuery}&number=1";
+            var url =
+                $"https://api.spoonacular.com/recipes/findByIngredients?apiKey={_apiKey}&ingredients={ingredientQuery}&number=1";
 
-             var response = await _client.GetAsync(url);
+            var response = await _client.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception("API request failed.");
@@ -68,7 +74,8 @@ namespace RecipeFinder.Services
 
             var id = recipeJson.GetProperty("id").GetInt32();
 
-            var detailUrl = $"https://api.spoonacular.com/recipes/{id}/information?apiKey={_apiKey}&includeNutrition=false";
+            var detailUrl =
+                $"https://api.spoonacular.com/recipes/{id}/information?apiKey={_apiKey}&includeNutrition=false";
 
             var detailResponse = await _client.GetAsync(detailUrl);
 
@@ -80,10 +87,10 @@ namespace RecipeFinder.Services
 
             return new Recipe
             {
-            Title = detailDoc.GetProperty("title").GetString() ?? "",
+                Title = detailDoc.GetProperty("title").GetString() ?? "",
                 ImageUrl = detailDoc.GetProperty("image").GetString() ?? "",
                 SourceUrl = detailDoc.GetProperty("sourceUrl").GetString() ?? "",
-                TimeRequired = detailDoc.GetProperty("readyInMinutes").GetInt32(),
+                TimeToMake = detailDoc.GetProperty("readyInMinutes").GetInt32(),
                 Summary = detailDoc.GetProperty("summary").GetString() ?? "",
                 Cuisines = detailDoc.GetProperty("cuisines").EnumerateArray().Select(c => c.GetString() ?? "").ToList(),
                 Diets = detailDoc.GetProperty("diets").EnumerateArray().Select(d => d.GetString() ?? "").ToList()

@@ -7,12 +7,12 @@ namespace RecipeFinder
     public class Program
     {
         private static RecipeService _recipeService;
-        private static IFavoritesRepository _favoritsRepo;
+        private static IFavoritesRepository _favoritesRepo;
 
         public static void Main(string[] args)
         {
             _recipeService = new SpoonacularRecipeService("6a7ecfd7849342fd967db287d2b14b6c");
-            _favoritsRepo = new FileFavoritesRepository();
+            _favoritesRepo = new FileFavoritesRepository();
 
             ShowMenu();
         }
@@ -61,6 +61,9 @@ namespace RecipeFinder
             Console.WriteLine("Enter a cuisine (American, Italian, Mexican): ");
             var cuisine = Console.ReadLine();
 
+            Console.WriteLine("Enter intolerances (comma-separted list or leave blank): ");
+            var intolerancesInput = Console.ReadLine();
+
             var prefs = new UserPreferences
             {
                 Cuisine = cuisine,
@@ -82,7 +85,7 @@ namespace RecipeFinder
                 Console.WriteLine("\n Save to favorites? (y/n): ");
                 if (Console.ReadLine()?.ToLower() == "y")
                 {
-                    _favoritsRepo.Save(recipe);
+                    _favoritesRepo.Save(recipe);
                     Console.WriteLine("Saved!");
                 }
             }
@@ -119,7 +122,7 @@ namespace RecipeFinder
                 Console.WriteLine("\n Save to favorites (y/n): ");
                 if (Console.ReadLine()?.ToLower() == "y")
                 {
-                    _favoritsRepo.Save(recipe);
+                    _favoritesRepo.Save(recipe);
                     Console.WriteLine("Saved!");
                 }
             }
@@ -133,7 +136,7 @@ namespace RecipeFinder
         {
             Console.WriteLine("\n---- Favorite Recipes ----");
 
-            var favorites = _favoritsRepo.Load();
+            var favorites = _favoritesRepo.Load();
 
             if (favorites.Count == 0)
             {
@@ -158,7 +161,7 @@ namespace RecipeFinder
 
             if (confirm == "y")
             {
-                _favoritsRepo.Clear();
+                _favoritesRepo.Clear();
                 Console.WriteLine("Favorites cleared.");
             }
             else

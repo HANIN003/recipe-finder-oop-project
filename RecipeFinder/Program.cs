@@ -7,8 +7,8 @@ namespace RecipeFinder
 {
     public class Program
     {
-        private static RecipeService _recipeService;
-        private static IFavoritesRepository _favoritesRepo;
+        private static RecipeService _recipeService = null!;
+        private static IFavoritesRepository _favoritesRepo = null!;
 
         public static void Main(string[] args)
         {

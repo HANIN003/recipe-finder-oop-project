@@ -11,8 +11,7 @@ namespace RecipeFinder
 
         public static void Main(string[] args)
         {
-            //Replace when API key is generated from Spoonacular
-            _recipeService = new SpoonacularRecipeService("API_KEY_HERE");
+            _recipeService = new SpoonacularRecipeService("6a7ecfd7849342fd967db287d2b14b6c");
             _favoritsRepo = new FileFavoritesRepository();
 
             ShowMenu();
@@ -57,10 +56,40 @@ namespace RecipeFinder
             }
         }
 
-        private static void SearchByCuisine()
+        private static async void SearchByCuisine()
         {
-            Console.WriteLine("Search by Cuisine selected");
-            //Code to come
+            Console.WriteLine("Enter a cuisine (American, Italian, Mexican): ");
+            var cuisine = Console.ReadLine();
+
+            var prefs = new UserPreferences
+            {
+                Cuisine = cuisine,
+                Intolerances = intolerancesInput?
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(i => i.Trim())
+                    .ToList() ?? new List<string>()
+            };
+
+            try
+            {
+                var recipe = await _recipeService.SearchByCuisineAsync(prefs);
+
+                Console.WriteLine($"\n Recipe Found: {recipe.Title}");
+                Console.WriteLine($"Time to Make: {recipe.TimeToMake} minutes");
+                Console.WriteLine($"Source: {recipe.SourceUrl}");
+                Console.WriteLine($"Summary: {recipe.Summary}");
+
+                Console.WriteLine("\n Save to favorites? (y/n): ");
+                if (Console.ReadLine()?.ToLower() == "y")
+                {
+                    _favoritsRepo.Save(recipe);
+                    Console.WriteLine("Saved!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }        
         }
 
         private static void SearchByIngredients()
